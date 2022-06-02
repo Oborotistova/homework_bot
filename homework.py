@@ -58,7 +58,7 @@ def get_api_answer(current_timestamp):
     """Делает запрос к единственному эндпоинту API-сервиса."""
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
-    try: 
+    try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
     except Exception as error:
         logger.error(f'Ошибка при запросе к основному API: {error}')
@@ -73,8 +73,8 @@ def check_response(response):
     if len(list_homeworks) != 0:
         homework = list_homeworks[0]
     else:
-        logger.error(f'Список домашних работ пуст')
-        raise IndexError(f'Список домашних работ пуст')
+        logger.error('Список домашних работ пуст')
+        raise IndexError('Список домашних работ пуст')
     return homework
 
 
@@ -91,8 +91,8 @@ def parse_status(homework):
             f'недокументированный статус домашней работы {homework_status}')
         raise Exception(f'Неизвестный статус работы: {homework_status}')
     verdict = HOMEWORK_STATUSES[homework_status]
-    if homework_status is '':
-        logger.debug(f'отсутствие в ответе новых статусов')
+    if homework_status == '':
+        logger.debug('отсутствие в ответе новых статусов')
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
@@ -104,15 +104,10 @@ def check_tokens():
 
 def main():
     """Основная логика работы бота."""
-
-    ...
-
-    bot = Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())
-
     if not check_tokens():
         logger.critical('Отсутствуют одна или несколько переменных окружения')
-
+    bot = Bot(token=TELEGRAM_TOKEN)
+    current_timestamp = int(time.time())
     while True:
         try:
             response = get_api_answer(current_timestamp)
