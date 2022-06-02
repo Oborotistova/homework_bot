@@ -12,7 +12,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def init_logger():
+    """Конфигурация логгирования."""
     logging.basicConfig(
         filename='main.log',
         filemode='w',
@@ -22,8 +24,8 @@ def init_logger():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     handler = RotatingFileHandler('my_logger.log',
-                              maxBytes=50000000,
-                              backupCount=5)
+                                  maxBytes=50000000,
+                                  backupCount=5)
     logger.addHandler(handler)
     formatter = logging.Formatter(
         '%(asctime)s, %(levelname)s, (%(filename)s).%(funcName)s(%(lineno)d),'
@@ -34,6 +36,7 @@ def init_logger():
     stream_handler.setLevel(logging.INFO)
     stream_handler.setFormatter(logging.Formatter(formatter))
     return logger
+
 
 logger = init_logger()
 
@@ -51,7 +54,6 @@ HOMEWORK_STATUSES = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
-
 
 def send_message(bot, message: str) -> str:
     """Отправляет сообщение в Telegram чат."""
@@ -75,7 +77,6 @@ def get_api_answer(current_timestamp: int) -> List:
         return response.json()
     except Exception as error:
         logger.error(f'Формат ответф не json(): {error}')
-
 
 
 def check_response(response: dict) -> str:
@@ -124,6 +125,7 @@ def main():
     while True:
         try:
             response = get_api_answer(current_timestamp)
+            message = parse_status(check_response(response))
             send_message(bot, message)
             logger.info('удачная отправка любого сообщения в Telegram')
             current_timestamp = response.get('current_date')
