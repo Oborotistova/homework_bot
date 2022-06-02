@@ -55,9 +55,10 @@ HOMEWORK_STATUSES = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
+
 def send_message(bot, message: str) -> str:
     """Отправляет сообщение в Telegram чат."""
-    try: 
+    try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except Exception as error:
         logger.error(f'Ошибка при отправке сообщения: {error}')
