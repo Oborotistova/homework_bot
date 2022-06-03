@@ -70,14 +70,14 @@ def get_api_answer(current_timestamp: int) -> List:
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
-    except Exception as error:
+    except requests.exceptions.RequestException as error:
         logger.error(f'Ошибка при запросе к основному API: {error}')
     if response.status_code != HTTPStatus.OK:
         raise 'отсутствие ответa API'
     try:
         return response.json()
-    except Exception as error:
-        logger.error(f'Формат ответф не json(): {error}')
+    except ValueError as error:
+        logger.error(f'Формат ответa не json(): {error}')
 
 
 def check_response(response: dict) -> str:
@@ -89,9 +89,8 @@ def check_response(response: dict) -> str:
         raise KeyError('Отсутствует ключ "homeworks" в ответе API')
     if len(list_homeworks) != 0:
         return list_homeworks[0]
-    else:
-        logger.error('Список домашних работ пуст')
-        raise IndexError('Список домашних работ пуст')
+    logger.error('Список домашних работ пуст')
+    raise IndexError('Список домашних работ пуст')
 
 
 def parse_status(homework: dict) -> str:
@@ -107,8 +106,6 @@ def parse_status(homework: dict) -> str:
             f'недокументированный статус домашней работы {homework_status}')
         raise Exception(f'Неизвестный статус работы: {homework_status}')
     verdict = HOMEWORK_STATUSES[homework_status]
-    if homework_status == '':
-        logger.debug('отсутствие в ответе новых статусов')
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
@@ -130,10 +127,10 @@ def main():
             send_message(bot, message)
             logger.info('удачная отправка любого сообщения в Telegram')
             current_timestamp = response.get('current_date')
-            time.sleep(RETRY_TIME)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logger.error('сбой при отправке сообщения в Telegram')
+        finally:
             time.sleep(RETRY_TIME)
 
 
