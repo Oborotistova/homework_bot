@@ -8,7 +8,7 @@ python telegram bot
 ### Инструкция по развёртыванию проекта
 клонировать проект на компьютер
 ```
-git clone https://github.com/Oborotistova/homework-bot.git
+git clone https://github.com/Oborotistova/homework_bot.git
 ```
 создание виртуального окружения
 ```
